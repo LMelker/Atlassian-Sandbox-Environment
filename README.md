@@ -51,7 +51,7 @@ For example:
 - Add "palette" for Dashboard, and show the status from JVM.  
   (To easy view of JVM: add the jolokia-plugin to the [application].)
 
-## Add som testcode in Python
+## Add testcode in Python
 Use Jupyet to code in Python for interact with this applications.
 http://jupyter.internal
 1. You need to start Jupyter in frontground to get a token in the log.
