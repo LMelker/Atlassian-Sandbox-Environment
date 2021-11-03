@@ -30,11 +30,14 @@ services:
      - ATL_PROXY_NAME=jira.internal
      - ATL_PROXY_PORT=80
      - ATL_TOMCAT_SCHEME=http
-     - JVM_MAXIMUM_MEMORY=4g3g
+     - JVM_MAXIMUM_MEMORY=3g
      - SET_PERMISSIONS=false
      - JVM_SUPPORT_RECOMMENDED_ARGS=-Djira.startup.warnings.disable
     healthcheck:
       test: ["CMD", "curl", "-f", "http://atlas-jira:8080/status"]
+    networks:
+     - frontside
+     - backside
 
 
   confluence:
@@ -59,6 +62,9 @@ services:
      - SET_PERMISSIONS=false
     healthcheck:
       test: ["CMD", "curl", "-f", "http://atlas-confluence:8090/status"]
+    networks:
+     - frontside
+     - backside
 
   bitbucket:
     container_name: atlas-bitbucket
@@ -80,6 +86,9 @@ services:
       - SERVER_SECURE=false
       - JVM_MAXIMUM_MEMORY=1g
       - SET_PERMISSIONS=false
+    networks:
+      - frontside
+      - backside
 
   bamboo:
     container_name: atlas-bamboo
@@ -99,6 +108,9 @@ services:
      - ATL_TOMCAT_SCHEME=http
      - JVM_MAXIMUM_MEMORY=1g
      - SET_PERMISSIONS=false
+    networks:
+     - frontside
+     - backside
 
   postgres:
     container_name: atlas-postgres
@@ -108,6 +120,8 @@ services:
     environment:
      - POSTGRES_USER=postgres
      - POSTGRES_PASSWORD=Incorrect
+    networks:
+     - backside
 
   pgadmin:
     container_name: atlas-pgadmin
@@ -125,6 +139,9 @@ services:
      - SERVER_SCHEME=http
      - PGADMIN_DEFAULT_EMAIL=pgadmin@pgadmin.internal
      - PGADMIN_DEFAULT_PASSWORD=Incorrect
+    networks:
+      - frontside
+      - backside
 
   nodered:
     container_name: atlas-nodered
@@ -133,6 +150,8 @@ services:
     image: nodered/node-red:latest-minimal
 #    ports:
 #     - "1880:1880"
+    networks:
+      - frontside
 
   jupyter:
     container_name: atlas-jupyter
@@ -143,6 +162,8 @@ services:
      - "8888:8888"
     environment:
      - JUPYTER_ENABLE_LAB=yes
+    networks:
+      - frontside
 
   nginx:
     container_name: atlas-nginx
@@ -161,16 +182,16 @@ services:
     ports:
      - "80:80"
     networks:
-      default:
+      frontside:
         aliases:
 #         - crowd.internal
-         - jira.internal
-         - confluence.internal
-         - bitbucket.internal
-         - bamboo.internal
-         - pgadmin.internal
-         - nodered.internal
-         - jupyter.internal
+          - jira.internal
+          - confluence.internal
+          - bitbucket.internal
+          - bamboo.internal
+          - pgadmin.internal
+          - nodered.internal
+          - jupyter.internal
 
 volumes:
 #    atlas-crowd-volume:
@@ -182,3 +203,7 @@ volumes:
     atlas-postgres-volume:
     atlas-jupyter-volume:
     atlas-nodered-volume:
+
+networks:
+  frontside:
+  backside:
