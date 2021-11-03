@@ -35,6 +35,9 @@ services:
      - JVM_SUPPORT_RECOMMENDED_ARGS=-Djira.startup.warnings.disable
     healthcheck:
       test: ["CMD", "curl", "-f", "http://atlas-jira:8080/status"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
     networks:
      - frontside
      - backside
@@ -62,6 +65,9 @@ services:
      - SET_PERMISSIONS=false
     healthcheck:
       test: ["CMD", "curl", "-f", "http://atlas-confluence:8090/status"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
     networks:
      - frontside
      - backside
