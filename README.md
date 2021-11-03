@@ -18,7 +18,7 @@ You need admin / sudo right to add this info in your "hosts"-file:
 If you are't able to edit the "hosts"-file, use the ports..  
 But you need the unmark in the docker-compose.xml file.
 
-App | Url
+Application | Url
 -----------|----------------------  
 crowd | http://localhost:8095
 jira | http://localhost:8080
@@ -29,8 +29,8 @@ bamboo | http://localhost:8085
 pgadmin | http://localhost:5050
 nodered | http://localhost:1880
 jupyter | http://localhost:8888
-In the docker-compose.yml:
 
+### In the docker-compose.yml:
 * Crowd is diabled.
 * Standard ports are diabled.
 
@@ -38,18 +38,20 @@ In the docker-compose.yml:
 ````bash
 docker-compose up -d
 ````
-- Go to: http://pgadmin.internal
-- Connect to Postgres database
-- Create a database for all appliacations.
-- Goto: http://[application].internal
-- Start setup [application] with the database you had created.
+1. Go to: http://pgadmin.internal
+2. Connect to Postgres database
+3. Create a database for the [application].
+4. Goto: http://[application].internal
+5. Start setup [application] with the database you had created.
 
+## Easy testing, mockups, setup a dashboard...
 Use NodeRed (http://nodered.internal) for mockups of your work / testing.  
 For example:  
 - Add "palette" for SMTP, so Jira can send mail  
 - Add "palette" for Dashboard, and show the status from JVM.  
-  (To easy view JVM: add jolokia-plugin for Jira.)
+  (To easy view of JVM: add the jolokia-plugin to the [application].)
 
+## Add som testcode in Python
 Use Jupyet to code in Python for interact with this applications.
 http://jupyter.internal
 1. You need to start Jupyter in frontground to get a token in the log.
@@ -57,7 +59,7 @@ http://jupyter.internal
 3. restart Jupyter in the background and login with the password.
 
 ## Links
-Apps | Url
+Application | Url
 -----|---------------
 Jolokia | https://marketplace.atlassian.com/apps/1213211/jolokia-monitoring-agent
 node-red-contrib-mailin-smtp (SMTP for NodeRed) | https://flows.nodered.org/node/node-red-contrib-mailin-smtp
