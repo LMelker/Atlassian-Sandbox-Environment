@@ -104,7 +104,7 @@ services:
     container_name: atlas-postgres
     image: postgres:10
     volumes:
-     - atlas-ostgres-volume:/var/lib/postgresql/data
+     - atlas-postgres-volume:/var/lib/postgresql/data
     environment:
      - POSTGRES_USER=postgres
      - POSTGRES_PASSWORD=Incorrect
