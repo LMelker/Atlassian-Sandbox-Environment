@@ -180,5 +180,5 @@ volumes:
     atlas-bamboo-volume:
     atlas-pgadmin-volume:
     atlas-postgres-volume:
-    jupyter-volume:
+    atlas-jupyter-volume:
     atlas-nodered-volume:
