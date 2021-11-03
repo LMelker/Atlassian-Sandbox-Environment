@@ -1,0 +1,184 @@
+version: '3.4'
+
+services:
+#  crowd:
+#    container_name: int-crowd
+#    image: atlassian/crowd:latest
+#    volumes:
+#     - crowd-volume:/var/atlassian/application-data/crowd
+#   ports:
+#    - "8095:8095"
+#    depends_on:
+#     - postgres
+#    environment:
+#     - ATL_PROXY_NAME=crowd.internal
+#     - ATL_PROXY_PORT=80
+#     - ATL_TOMCAT_SCHEME=http
+#     - SET_PERMISSIONS=false
+
+  jira:
+    container_name: int-jira
+    image: atlassian/jira-core:latest
+    volumes:
+     - jira-volume:/var/atlassian/application-data/jira
+ #   ports:
+ #    - "8080:8080"
+    depends_on:
+     - postgres
+     - pgadmin
+    environment:
+     - ATL_PROXY_NAME=jira.internal
+     - ATL_PROXY_PORT=80
+     - ATL_TOMCAT_SCHEME=http
+     - JVM_MAXIMUM_MEMORY=4g
+     - SET_PERMISSIONS=false
+     - JVM_SUPPORT_RECOMMENDED_ARGS=-Djira.startup.warnings.disable
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://int-jira:8080/status"]
+
+
+  confluence:
+    container_name: int-confluence
+    image: atlassian/confluence-server:latest
+    volumes:
+     - confluence-volume:/var/atlassian/application-data/confluence
+#    ports:
+#     - "8090:8090"
+#     - "8091:8091"
+    depends_on:
+     - postgres
+     - pgadmin
+     - bitbucket
+     - jira
+     - bamboo
+    environment:
+     - ATL_PROXY_NAME=confluence.internal
+     - ATL_PROXY_PORT=80
+     - ATL_TOMCAT_SCHEME=http
+     - JVM_MAXIMUM_MEMORY=4g
+     - SET_PERMISSIONS=false
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://int-confluence:8090/status"]
+
+  bitbucket:
+    container_name: int-bitbucket
+    image: atlassian/bitbucket-server:latest
+    volumes:
+      - bitbucket-volume:/var/atlassian/application-data/bitbucket
+    ports:
+      - "7990:7990"
+      - "7999:7999"
+    depends_on:
+      - postgres
+      - pgadmin
+      - bamboo
+      - jira
+    environment:
+      - SERVER_PROXY_NAME=bitbucket.internal
+      - SERVER_PROXY_PORT=80
+      - SERVER_SCHEME=http
+      - SERVER_SECURE=false
+      - JVM_MAXIMUM_MEMORY=1g
+      - SET_PERMISSIONS=false
+
+  bamboo:
+    container_name: int-bamboo
+    image: atlassian/bamboo-server:latest
+    volumes:
+     - int-bamboo-volume:/var/atlassian/application-data/bamboo
+    ports:
+     - "8085:8085"
+     - "54663:54663"
+    depends_on:
+     - postgres
+     - pgadmin
+     - jira
+    environment:
+     - ATL_PROXY_NAME=bamboo.internal
+     - ATL_PROXY_PORT=80
+     - ATL_TOMCAT_SCHEME=http
+     - JVM_MAXIMUM_MEMORY=1g
+     - SET_PERMISSIONS=false
+
+  postgres:
+    container_name: int-postgres
+    image: postgres:10
+    volumes:
+     - postgres-volume:/var/lib/postgresql/data
+    environment:
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=Incorrect
+
+  pgadmin:
+    container_name: int-pgadmin
+    image: dpage/pgadmin4:latest
+    volumes:
+     - pgadmin-volume:/var/lib/pgadmin
+#    ports:
+#     - "5050:5050"
+    depends_on:
+     - postgres
+    environment:
+     - SERVER_PROXY_NAME=pgadmin.internal
+     - SERVER_PROXY_PORT=80
+     - PGADMIN_LISTEN_PORT=5050
+     - SERVER_SCHEME=http
+     - PGADMIN_DEFAULT_EMAIL=pgadmin@pgadmin.internal
+     - PGADMIN_DEFAULT_PASSWORD=Incorrect
+
+  nodered:
+    container_name: int-nodered
+    volumes:
+     - nodered-volume:/data
+    image: nodered/node-red:latest-minimal
+#    ports:
+#     - "1880:1880"
+
+  jupyter:
+    container_name: int-jupyter
+    volumes:
+     - jupyter-volume:/home
+    image: jupyter/base-notebook:latest
+    ports:
+     - "8888:8888"
+    environment:
+     - JUPYTER_ENABLE_LAB=yes
+
+  nginx:
+    container_name: int-nginx
+    image: nginx:latest
+    volumes:
+     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+#     - crowd
+     - jira
+     - bamboo
+     - confluence
+     - bitbucket
+     - pgadmin
+     - nodered
+     - jupyter
+    ports:
+     - "80:80"
+    networks:
+      default:
+        aliases:
+#         - crowd.internal
+         - jira.internal
+         - confluence.internal
+         - bitbucket.internal
+         - bamboo.internal
+         - pgadmin.internal
+         - nodered.internal
+         - jupyter.internal
+
+volumes:
+    nodered-volume:
+#    crowd-volume:
+    jira-volume:
+    confluence-volume:
+    bitbucket-volume:
+    int-bamboo-volume:
+    pgadmin-volume:
+    postgres-volume:
+    jupyter-volume:
